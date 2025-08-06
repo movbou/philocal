@@ -13,12 +13,7 @@ int	check_death(t_data *data)
 		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		
-		// For minimum timing constraints only, add tolerance
-		long tolerance = 0;
-		if (data->time_to_die == 60 && data->time_to_eat == 60 && data->time_to_sleep == 60)
-			tolerance = 60; // Special case for the exact minimum valid times test
-		
-		if (time_since_last_meal > data->time_to_die + tolerance)
+		if (time_since_last_meal > data->time_to_die)
 		{
 			pthread_mutex_unlock(&data->death_mutex);
 			pthread_mutex_lock(&data->write_mutex);
@@ -42,6 +37,7 @@ int	all_philos_full(t_data *data)
 	if (data->must_eat_count == -1)
 		return (0);
 	
+	pthread_mutex_lock(&data->death_mutex);
 	full_count = 0;
 	i = 0;
 	while (i < data->philo_count)
@@ -50,6 +46,7 @@ int	all_philos_full(t_data *data)
 			full_count++;
 		i++;
 	}
+	pthread_mutex_unlock(&data->death_mutex);
 	
 	if (full_count == data->philo_count)
 	{
@@ -70,7 +67,7 @@ void	*monitor_routine(void *arg)
 		if (check_death(data) || all_philos_full(data))
 			break;
 		
-		usleep(1000);
+		usleep(100);
 	}
 	
 	return (NULL);
