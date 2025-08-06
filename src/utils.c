@@ -51,3 +51,8 @@ void	cleanup_data(t_data *data)
 	if (data->philos)
 		free(data->philos);
 }
+
+void	print_error(char *s)
+{
+	printf("%s", s);
+}

@@ -22,7 +22,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		print_error("Usage: ./philo philo_count time_to_die time_to_eat time_to_sleep [must_eat_count]\n");
+		print_error("Usage: ./philo philo_count time_to_die time_to_eat ");
+		print_error("time_to_sleep [must_eat_count]\n");
 		return (1);
 	}
 	return (0);
