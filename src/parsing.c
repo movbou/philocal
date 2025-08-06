@@ -92,5 +92,10 @@ int	parse_arguments(int argc, char **argv, t_data *data)
 		printf("Error: Too many philosophers (max %d)\n", MAX_PHILOS);
 		return (0);
 	}
+	if (data->philo_count <= 0)
+	{
+		printf("Error: Number of philosophers must be positive\n");
+		return (0);
+	}
 	return (1);
 }
