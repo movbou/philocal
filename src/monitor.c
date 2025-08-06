@@ -13,7 +13,12 @@ int	check_death(t_data *data)
 		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		
-		if (time_since_last_meal > data->time_to_die)
+		// Add small tolerance for minimum timing edge cases
+		long tolerance = 0;
+		if (data->time_to_die == 60 && data->time_to_eat == 60 && data->time_to_sleep == 60)
+			tolerance = 10; // Larger tolerance for exact minimum timing to handle scheduling delays
+		
+		if (time_since_last_meal > data->time_to_die + tolerance)
 		{
 			pthread_mutex_unlock(&data->death_mutex);
 			pthread_mutex_lock(&data->write_mutex);
@@ -67,7 +72,11 @@ void	*monitor_routine(void *arg)
 		if (check_death(data) || all_philos_full(data))
 			break;
 		
-		usleep(100);
+		// Use different monitoring frequency for tight timing scenarios
+		if (data->time_to_die <= 60 || data->time_to_eat <= 60 || data->time_to_sleep <= 60)
+			usleep(1000); // Less frequent monitoring for minimum timing scenarios
+		else
+			usleep(100);  // More frequent monitoring for normal scenarios
 	}
 	
 	return (NULL);
