@@ -38,7 +38,8 @@ int	start_simulation(t_data *data)
 	i = 0;
 	while (i < data->philo_count)
 	{
-		if (pthread_create(&data->philos[i].thread, NULL, philosopher_routine, &data->philos[i]))
+		if (pthread_create(&data->philos[i].thread, NULL, 
+			philosopher_routine, &data->philos[i]))
 		{
 			print_error("Error: Failed to create philosopher thread\n");
 			return (0);
