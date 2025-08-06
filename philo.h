@@ -1,10 +1,9 @@
 #include <limits.h>
-#include <mutex>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <threads.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #define MAX_PHILOS 200
 #define THINKING 0
@@ -15,11 +14,10 @@
 /*
 	fork
 */
-
 typedef struct s_fork
 {
 	pthread_mutex_t		fork;
-	int			fork_id;
+	int					fork_id;
 }				t_fork;
 
 /*
@@ -27,34 +25,63 @@ typedef struct s_fork
 */
 typedef struct s_philo
 {
-	int			id;
-	int			state;
-	long		meal_count;
-	long		last_meal_time;
-	int			is_full;
-	t_fork		*left_fork;
-	t_fork		*right_fork;
-	pthread_t	thread;
-
+	int					id;
+	int					state;
+	long				meal_count;
+	long				last_meal_time;
+	int					is_full;
+	t_fork				*left_fork;
+	t_fork				*right_fork;
+	pthread_t			thread;
+	struct s_data		*data;
 }				t_philo;
+
 /*
  data
 */
 typedef struct s_data
 {
-	long		philo_count;
-	long		time_to_die;
-	long		time_to_eat;
-	long		time_to_sleep;
-	int			must_eat_count;
-	long		start_simulation_time;
-	int			end_sumulation;
-	t_fork		*forks;
-	t_philo		*philos;
-
+	long				philo_count;
+	long				time_to_die;
+	long				time_to_eat;
+	long				time_to_sleep;
+	int					must_eat_count;
+	long				start_simulation_time;
+	int					end_simulation;
+	pthread_mutex_t		write_mutex;
+	pthread_mutex_t		death_mutex;
+	t_fork				*forks;
+	t_philo				*philos;
 }				t_data;
 
+/* parsing.c */
+int		parse_arguments(int argc, char **argv, t_data *data);
+void	exit_error(char *s);
+long	ft_atol(const char *str);
 
+/* init.c */
+int		init_data(t_data *data);
+int		init_mutex(t_data *data);
+void	init_philosophers(t_data *data);
 
-int	parse_arguments(int argc, char **argv, t_data *data);
-void exit_error(char *s);
+/* utils.c */
+long	get_current_time(void);
+void	ft_usleep(long time);
+void	print_status(t_philo *philo, char *status);
+void	cleanup_data(t_data *data);
+
+/* simulation.c */
+void	start_simulation(t_data *data);
+void	*philosopher_routine(void *arg);
+
+/* actions.c */
+void	philo_eat(t_philo *philo);
+void	philo_sleep(t_philo *philo);
+void	philo_think(t_philo *philo);
+void	take_forks(t_philo *philo);
+void	drop_forks(t_philo *philo);
+
+/* monitor.c */
+void	*monitor_routine(void *arg);
+int		check_death(t_data *data);
+int		all_philos_full(t_data *data);

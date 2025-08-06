@@ -50,10 +50,10 @@ int	parse_arguments(int argc, char **argv, t_data *data)
 		data->must_eat_count = ft_atol(argv[5]);
 	else
 		data->must_eat_count = -1;
-	if (data->time_to_die < 60000 || data->time_to_eat < 60000
-		|| data->time_to_sleep < 60000 || (argc == 6 && data->must_eat_count < 60000))
+	if (data->time_to_die < 60 || data->time_to_eat < 60
+		|| data->time_to_sleep < 60 || (argc == 6 && data->must_eat_count < 0))
 	{
-		printf("Error: arguments must be at least 60000 ms\n");
+		printf("Error: arguments must be at least 60 ms\n");
 		return (0);
 	}
 
