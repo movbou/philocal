@@ -39,6 +39,12 @@ void	drop_forks(t_philo *philo)
 
 void	philo_eat(t_philo *philo)
 {
+	// Update last_meal_time before trying to acquire forks
+	// This ensures that time spent waiting for forks doesn't count against survival
+	pthread_mutex_lock(&philo->data->death_mutex);
+	philo->last_meal_time = get_current_time();
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	
 	take_forks(philo);
 	
 	if (philo->data->philo_count == 1)
@@ -52,7 +58,6 @@ void	philo_eat(t_philo *philo)
 	}
 	
 	pthread_mutex_lock(&philo->data->death_mutex);
-	philo->last_meal_time = get_current_time();
 	philo->meal_count++;
 	pthread_mutex_unlock(&philo->data->death_mutex);
 	
