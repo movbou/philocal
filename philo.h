@@ -56,7 +56,7 @@ typedef struct s_data
 
 /* parsing.c */
 int		parse_arguments(int argc, char **argv, t_data *data);
-void	exit_error(char *s);
+void	print_error(char *s);
 long	ft_atol(const char *str);
 
 /* init.c */
@@ -71,7 +71,7 @@ void	print_status(t_philo *philo, char *status);
 void	cleanup_data(t_data *data);
 
 /* simulation.c */
-void	start_simulation(t_data *data);
+int	start_simulation(t_data *data);
 void	*philosopher_routine(void *arg);
 
 /* actions.c */

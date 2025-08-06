@@ -30,7 +30,7 @@ void	*philosopher_routine(void *arg)
 	return (NULL);
 }
 
-void	start_simulation(t_data *data)
+int	start_simulation(t_data *data)
 {
 	int			i;
 	pthread_t	monitor_thread;
@@ -40,16 +40,16 @@ void	start_simulation(t_data *data)
 	{
 		if (pthread_create(&data->philos[i].thread, NULL, philosopher_routine, &data->philos[i]))
 		{
-			exit_error("Error: Failed to create philosopher thread\n");
-			return;
+			print_error("Error: Failed to create philosopher thread\n");
+			return (0);
 		}
 		i++;
 	}
 	
 	if (pthread_create(&monitor_thread, NULL, monitor_routine, data))
 	{
-		exit_error("Error: Failed to create monitor thread\n");
-		return;
+		print_error("Error: Failed to create monitor thread\n");
+		return (0);
 	}
 	
 	pthread_join(monitor_thread, NULL);
@@ -60,4 +60,5 @@ void	start_simulation(t_data *data)
 		pthread_join(data->philos[i].thread, NULL);
 		i++;
 	}
+	return (1);
 }
