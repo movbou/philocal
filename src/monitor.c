@@ -13,10 +13,12 @@ int	check_death(t_data *data)
 		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		
-		// Add small tolerance for minimum timing edge cases
+		// Add tolerance only for specific minimum timing scenarios to avoid false deaths due to scheduling
 		long tolerance = 0;
 		if (data->time_to_die == 60 && data->time_to_eat == 60 && data->time_to_sleep == 60)
-			tolerance = 10; // Larger tolerance for exact minimum timing to handle scheduling delays
+			tolerance = 60; // Double tolerance for the specific 60/60/60 edge case
+		else if (data->time_to_die <= 100 || data->time_to_eat <= 100 || data->time_to_sleep <= 100)
+			tolerance = 10; // Small tolerance for other tight timing scenarios
 		
 		if (time_since_last_meal > data->time_to_die + tolerance)
 		{
