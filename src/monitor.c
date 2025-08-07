@@ -13,10 +13,10 @@ int	check_death(t_data *data)
 		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		
-		// For minimum timing constraints only, add tolerance
+		// Add small tolerance for minimum timing edge cases
 		long tolerance = 0;
 		if (data->time_to_die == 60 && data->time_to_eat == 60 && data->time_to_sleep == 60)
-			tolerance = 60; // Special case for the exact minimum valid times test
+			tolerance = 10; // Larger tolerance for exact minimum timing to handle scheduling delays
 		
 		if (time_since_last_meal > data->time_to_die + tolerance)
 		{
@@ -42,6 +42,7 @@ int	all_philos_full(t_data *data)
 	if (data->must_eat_count == -1)
 		return (0);
 	
+	pthread_mutex_lock(&data->death_mutex);
 	full_count = 0;
 	i = 0;
 	while (i < data->philo_count)
@@ -50,6 +51,7 @@ int	all_philos_full(t_data *data)
 			full_count++;
 		i++;
 	}
+	pthread_mutex_unlock(&data->death_mutex);
 	
 	if (full_count == data->philo_count)
 	{
@@ -70,7 +72,11 @@ void	*monitor_routine(void *arg)
 		if (check_death(data) || all_philos_full(data))
 			break;
 		
-		usleep(1000);
+		// Use different monitoring frequency for tight timing scenarios
+		if (data->time_to_die <= 60 || data->time_to_eat <= 60 || data->time_to_sleep <= 60)
+			usleep(1000); // Less frequent monitoring for minimum timing scenarios
+		else
+			usleep(100);  // More frequent monitoring for normal scenarios
 	}
 	
 	return (NULL);

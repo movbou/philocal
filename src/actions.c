@@ -54,14 +54,14 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->death_mutex);
 	philo->last_meal_time = get_current_time();
 	philo->meal_count++;
-	pthread_mutex_unlock(&philo->data->death_mutex);
-	
-	print_status(philo, "is eating");
-	ft_usleep(philo->data->time_to_eat);
 	
 	if (philo->data->must_eat_count != -1 && 
 		philo->meal_count >= philo->data->must_eat_count)
 		philo->is_full = 1;
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	
+	print_status(philo, "is eating");
+	ft_usleep(philo->data->time_to_eat);
 	
 	drop_forks(philo);
 }
