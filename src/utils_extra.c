@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils_extra.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,17 +12,24 @@
 
 #include "../philo.h"
 
-int	main(int argc, char **argv)
+int	is_simulation_ended(t_data *data)
 {
-	t_data	data;
+	int	result;
 
-	data.end_simulation = 0;
-	if (!parse_arguments(argc, argv, &data))
-		return (1);
-	if (!init_data(&data))
-		return (1);
-	if (!start_simulation(&data))
-		return (1);
-	cleanup_data(&data);
-	return (0);
+	pthread_mutex_lock(&data->end_simulation_mutex);
+	result = data->end_simulation;
+	pthread_mutex_unlock(&data->end_simulation_mutex);
+	return (result);
+}
+
+void	end_simulation(t_data *data)
+{
+	pthread_mutex_lock(&data->end_simulation_mutex);
+	data->end_simulation = 1;
+	pthread_mutex_unlock(&data->end_simulation_mutex);
+}
+
+int	is_simulation_active(t_data *data)
+{
+	return (!is_simulation_ended(data));
 }

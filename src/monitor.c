@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 00:00:00 by movbou            #+#    #+#             */
+/*   Updated: 2025/08/25 00:00:00 by movbou           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 
 int	check_death(t_data *data)
@@ -12,13 +24,11 @@ int	check_death(t_data *data)
 		pthread_mutex_lock(&data->death_mutex);
 		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
-		
-		// NO TOLERANCE - strict timing as per problem requirements
 		if (time_since_last_meal > data->time_to_die)
 		{
 			pthread_mutex_unlock(&data->death_mutex);
 			pthread_mutex_lock(&data->write_mutex);
-			printf("%ld %d died\n", 
+			printf("%ld %d died\n",
 				current_time - data->start_simulation_time, data->philos[i].id);
 			pthread_mutex_unlock(&data->write_mutex);
 			end_simulation(data);
@@ -37,7 +47,6 @@ int	all_philos_full(t_data *data)
 
 	if (data->must_eat_count == -1)
 		return (0);
-	
 	full_count = 0;
 	i = 0;
 	while (i < data->philo_count)
@@ -48,7 +57,6 @@ int	all_philos_full(t_data *data)
 		pthread_mutex_unlock(&data->death_mutex);
 		i++;
 	}
-	
 	if (full_count == data->philo_count)
 	{
 		end_simulation(data);
@@ -62,19 +70,14 @@ void	*monitor_routine(void *arg)
 	t_data	*data;
 
 	data = (t_data *)arg;
-	
 	while (!is_simulation_ended(data))
 	{
 		if (check_death(data) || all_philos_full(data))
-			break;
-		
-		// Higher frequency monitoring for better precision
-		// Especially important for short time_to_die values
+			break ;
 		if (data->time_to_die <= 100)
-			usleep(200);  // Check every 0.2ms for very short death times
+			usleep(200);
 		else
-			usleep(500);  // Check every 0.5ms for normal cases
+			usleep(500);
 	}
-	
 	return (NULL);
 }

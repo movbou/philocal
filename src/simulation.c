@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   simulation.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 00:00:00 by movbou            #+#    #+#             */
+/*   Updated: 2025/08/25 00:00:00 by movbou           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 
 void	*philosopher_routine(void *arg)
@@ -5,61 +17,65 @@ void	*philosopher_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	
 	if (philo->id % 2 == 0)
 		ft_usleep(1);
-	
 	while (!is_simulation_ended(philo->data))
 	{
 		if (philo->is_full)
-			break;
-		
+			break ;
 		philo_eat(philo);
-		
 		if (is_simulation_ended(philo->data))
-			break;
-		
+			break ;
 		philo_sleep(philo);
-		
 		if (is_simulation_ended(philo->data))
-			break;
-		
+			break ;
 		philo_think(philo);
 	}
-	
 	return (NULL);
 }
 
-int	start_simulation(t_data *data)
+static int	create_philosopher_threads(t_data *data)
 {
-	int			i;
-	pthread_t	monitor_thread;
+	int	i;
 
 	i = 0;
 	while (i < data->philo_count)
 	{
-		if (pthread_create(&data->philos[i].thread, NULL, 
-			philosopher_routine, &data->philos[i]))
+		if (pthread_create(&data->philos[i].thread, NULL,
+				philosopher_routine, &data->philos[i]))
 		{
 			print_error("Error: Failed to create philosopher thread\n");
 			return (0);
 		}
 		i++;
 	}
-	
-	if (pthread_create(&monitor_thread, NULL, monitor_routine, data))
-	{
-		print_error("Error: Failed to create monitor thread\n");
-		return (0);
-	}
-	
-	pthread_join(monitor_thread, NULL);
-	
+	return (1);
+}
+
+static void	join_philosopher_threads(t_data *data)
+{
+	int	i;
+
 	i = 0;
 	while (i < data->philo_count)
 	{
 		pthread_join(data->philos[i].thread, NULL);
 		i++;
 	}
+}
+
+int	start_simulation(t_data *data)
+{
+	pthread_t	monitor_thread;
+
+	if (!create_philosopher_threads(data))
+		return (0);
+	if (pthread_create(&monitor_thread, NULL, monitor_routine, data))
+	{
+		print_error("Error: Failed to create monitor thread\n");
+		return (0);
+	}
+	pthread_join(monitor_thread, NULL);
+	join_philosopher_threads(data);
 	return (1);
 }

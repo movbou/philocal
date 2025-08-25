@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 00:00:00 by movbou            #+#    #+#             */
+/*   Updated: 2025/08/25 00:00:00 by movbou           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 #include <pthread.h>
 #include <stdlib.h>
@@ -54,17 +66,14 @@ int	init_data(t_data *data)
 {
 	data->end_simulation = 0;
 	data->start_simulation_time = get_current_time();
-	
 	data->philos = malloc(sizeof(t_philo) * data->philo_count);
 	if (!data->philos)
 		return (0);
-	
 	if (!init_mutex(data))
 	{
 		free(data->philos);
 		return (0);
 	}
-	
 	init_philosophers(data);
 	return (1);
 }

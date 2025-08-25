@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 00:00:00 by movbou            #+#    #+#             */
+/*   Updated: 2025/08/25 00:00:00 by movbou           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <limits.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -57,8 +69,10 @@ typedef struct s_data
 
 /* parsing.c */
 int		parse_arguments(int argc, char **argv, t_data *data);
-void	print_error(char *s);
 long	ft_atol(const char *str);
+int		validate_numeric_input(const char *str, int *i);
+long	convert_to_number(const char *str, int i);
+void	print_error(char *s);
 
 /* init.c */
 int		init_data(t_data *data);
@@ -74,7 +88,7 @@ int		is_simulation_ended(t_data *data);
 void	end_simulation(t_data *data);
 
 /* simulation.c */
-int	start_simulation(t_data *data);
+int		start_simulation(t_data *data);
 void	*philosopher_routine(void *arg);
 
 /* actions.c */

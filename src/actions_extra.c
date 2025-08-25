@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   actions_extra.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,53 +12,33 @@
 
 #include "../philo.h"
 
-long	get_current_time(void)
+void	philo_sleep(t_philo *philo)
 {
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
-
-void	ft_usleep(long time)
-{
-	long	start;
-
-	start = get_current_time();
-	while (get_current_time() - start < time)
-		usleep(500);
-}
-
-void	print_status(t_philo *philo, char *status)
-{
-	long	current_time;
-
+	if (is_simulation_ended(philo->data))
+		return ;
 	pthread_mutex_lock(&philo->data->write_mutex);
-	if (!is_simulation_ended(philo->data))
+	if (is_simulation_ended(philo->data))
 	{
-		current_time = get_current_time() - philo->data->start_simulation_time;
-		printf("%ld %d %s\n", current_time, philo->id, status);
+		pthread_mutex_unlock(&philo->data->write_mutex);
+		return ;
 	}
+	printf("%ld %d is sleeping\n",
+		get_current_time() - philo->data->start_simulation_time, philo->id);
 	pthread_mutex_unlock(&philo->data->write_mutex);
+	ft_usleep(philo->data->time_to_sleep);
 }
 
-void	cleanup_data(t_data *data)
+void	philo_think(t_philo *philo)
 {
-	int	i;
-
-	if (data->forks)
+	if (is_simulation_ended(philo->data))
+		return ;
+	pthread_mutex_lock(&philo->data->write_mutex);
+	if (is_simulation_ended(philo->data))
 	{
-		i = 0;
-		while (i < data->philo_count)
-		{
-			pthread_mutex_destroy(&data->forks[i].fork);
-			i++;
-		}
-		free(data->forks);
+		pthread_mutex_unlock(&philo->data->write_mutex);
+		return ;
 	}
-	pthread_mutex_destroy(&data->write_mutex);
-	pthread_mutex_destroy(&data->death_mutex);
-	pthread_mutex_destroy(&data->end_simulation_mutex);
-	if (data->philos)
-		free(data->philos);
+	printf("%ld %d is thinking\n",
+		get_current_time() - philo->data->start_simulation_time, philo->id);
+	pthread_mutex_unlock(&philo->data->write_mutex);
 }

@@ -1,50 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: movbou <movbou@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 00:00:00 by movbou            #+#    #+#             */
+/*   Updated: 2025/08/25 00:00:00 by movbou           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
-#include <stdio.h>
-#include <stdlib.h>
-
-static int	validate_numeric_input(const char *str, int *i)
-{
-	if (str[*i] == '+')
-		(*i)++;
-	else if (str[*i] == '-')
-	{
-		print_error("Error: arguments cant be negative");
-		return (0);
-	}
-	if (!(str[*i] >= '0' && str[*i] <= '9'))
-	{
-		print_error("Error: arguments cant be not a number");
-		return (0);
-	}
-	return (1);
-}
-
-static long	convert_to_number(const char *str, int i)
-{
-	long	n;
-
-	n = 0;
-	while (str[i] >= '0' && str[i] <= '9')
-		n = (n * 10) + (str[i++] - '0');
-	if (n > INT_MAX)
-	{
-		print_error("Error: the input value is too big");
-		return (LONG_MIN);
-	}
-	return (n);
-}
-
-long	ft_atol(const char *str)
-{
-	int	i;
-
-	i = 0;
-	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
-		i++;
-	if (!validate_numeric_input(str, &i))
-		return (LONG_MIN);
-	return (convert_to_number(str, i));
-}
 
 static int	parse_basic_args(char **argv, t_data *data)
 {
@@ -81,10 +47,9 @@ static int	parse_optional_arg(int argc, char **argv, t_data *data)
 
 static int	validate_args(int argc, t_data *data)
 {
-	if (data->time_to_die < 60 || data->time_to_eat < 60
-		|| data->time_to_sleep < 60 || (argc == 6 && data->must_eat_count < 0))
+	if ((argc == 6 && data->must_eat_count < 0))
 	{
-		printf("Error: arguments must be at least 60 ms\n");
+		printf("Error: must_eat_count cannot be negative\n");
 		return (0);
 	}
 	if (data->philo_count > MAX_PHILOS)

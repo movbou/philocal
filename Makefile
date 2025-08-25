@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
 
 SRCDIR = src
-SOURCES = $(SRCDIR)/main.c $(SRCDIR)/parsing.c $(SRCDIR)/init.c $(SRCDIR)/simulation.c $(SRCDIR)/actions.c $(SRCDIR)/monitor.c $(SRCDIR)/utils.c
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/parsing.c $(SRCDIR)/parsing_utils.c $(SRCDIR)/init.c $(SRCDIR)/simulation.c $(SRCDIR)/actions.c $(SRCDIR)/actions_extra.c $(SRCDIR)/monitor.c $(SRCDIR)/utils.c $(SRCDIR)/utils_extra.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
