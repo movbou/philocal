@@ -9,19 +9,19 @@ void	*philosopher_routine(void *arg)
 	if (philo->id % 2 == 0)
 		ft_usleep(1);
 	
-	while (!philo->data->end_simulation)
+	while (!is_simulation_ended(philo->data))
 	{
 		if (philo->is_full)
 			break;
 		
 		philo_eat(philo);
 		
-		if (philo->data->end_simulation)
+		if (is_simulation_ended(philo->data))
 			break;
 		
 		philo_sleep(philo);
 		
-		if (philo->data->end_simulation)
+		if (is_simulation_ended(philo->data))
 			break;
 		
 		philo_think(philo);

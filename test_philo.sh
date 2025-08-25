@@ -2,6 +2,9 @@
 
 # Comprehensive testing script for the Dining Philosophers project
 # Tests all edge cases and scenarios to ensure robust implementation
+# 
+# Dependencies: This script has been updated to remove the 'bc' dependency
+# for better compatibility with different environments
 
 # Colors for output
 RED='\033[0;31m'
@@ -169,12 +172,49 @@ run_test "Many philosophers, many meals" "10 2000 200 200 10" "completion" 30
 run_test "High frequency eating" "4 1000 50 50" "no_death" 5
 run_test "Long simulation" "4 2000 300 300" "no_death" 10
 
-# Test 7: Timing precision tests
-print_header "TIMING PRECISION TESTS"
+# Test 7: Official 42 evaluation tests
+print_header "OFFICIAL 42 EVALUATION TESTS"
 
-run_test "Exact death timing test" "2 600 200 200" "death" 5
-run_test "Close timing margins" "4 500 100 100" "death" 5
-run_test "Borderline survival" "4 600 200 100" "no_death" 5
+# These are the exact test cases from the 42 evaluation scale:
+# Test 1 800 200 200. The philosopher should not eat and should die.
+# Test 5 800 200 200. No philosopher should die.
+# Test 5 800 200 200 7. No philosopher should die and simulation should stop when every philosopher has eaten at least 7 times.
+# Test 4 410 200 200. No philosopher should die.
+# Test 4 310 200 100. One philosopher should die.
+
+run_test "Test 1: Single philosopher must die" "1 800 200 200" "death" 5
+run_test "Test 2: 5 philosophers should survive" "5 800 200 200" "no_death" 10
+run_test "Test 3: 5 philosophers with must_eat" "5 800 200 200 7" "completion" 30
+run_test "Test 4: 4 philosophers should survive" "4 410 200 200" "no_death" 10
+run_test "Test 5: 4 philosophers, one should die" "4 310 200 100" "death" 10
+
+# Additional test for timing precision (death delayed by more than 10ms is unacceptable)
+print_test "Test 6: 2 philosophers timing precision"
+echo "Testing: 2 philosophers timing precision" >> $TEST_LOG
+((TOTAL_TESTS++))
+
+# Test with 2 philosophers where death should occur at around 310ms
+output=$(timeout 5s ./philo 2 310 200 100 2>&1)
+
+echo "Command: ./philo 2 310 200 100" >> $TEST_LOG
+echo "Output: $output" >> $TEST_LOG
+
+if echo "$output" | grep -q "died"; then
+    # Extract the death time from output
+    death_time=$(echo "$output" | grep "died" | awk '{print $1}')
+    expected_death_time=310
+    time_diff=$((death_time - expected_death_time))
+    
+    # Check if death occurred within 10ms of expected time  
+    if [ $time_diff -le 10 ] && [ $time_diff -ge -10 ]; then
+        print_pass "2 philosophers timing precision (death at ${death_time}ms, expected ~${expected_death_time}ms)"
+    else
+        print_fail "2 philosophers timing precision - Death at ${death_time}ms, expected ~${expected_death_time}ms (diff: ${time_diff}ms)"
+    fi
+else
+    print_fail "2 philosophers timing precision - Expected death but didn't find it"
+fi
+echo "" >> $TEST_LOG
 
 # Memory leak test (if valgrind is available)
 print_header "MEMORY TESTS"
@@ -207,16 +247,16 @@ print_test "Performance benchmark (100 philosophers)"
 echo "Testing: Performance benchmark (100 philosophers)" >> $TEST_LOG
 ((TOTAL_TESTS++))
 
-start_time=$(date +%s.%N)
+start_time=$(date +%s)
 timeout 10s ./philo 100 1000 200 200 1 > /dev/null 2>&1
 exit_code=$?
-end_time=$(date +%s.%N)
-execution_time=$(echo "$end_time - $start_time" | bc)
+end_time=$(date +%s)
+execution_time=$((end_time - start_time))
 
 echo "Execution time: ${execution_time}s" >> $TEST_LOG
 echo "" >> $TEST_LOG
 
-if (( $(echo "$execution_time < 10.0" | bc -l) )); then
+if [ $execution_time -lt 10 ]; then
     print_pass "Performance test completed in ${execution_time}s"
 else
     print_fail "Performance test took too long: ${execution_time}s"

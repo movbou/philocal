@@ -45,7 +45,7 @@ void	philo_eat(t_philo *philo)
 	{
 		// Single philosopher can only take one fork, waits forever trying to get the second
 		// They will never actually eat and will eventually die
-		while (!philo->data->end_simulation)
+		while (!is_simulation_ended(philo->data))
 			ft_usleep(1);
 		drop_forks(philo);
 		return;
@@ -59,9 +59,11 @@ void	philo_eat(t_philo *philo)
 	print_status(philo, "is eating");
 	ft_usleep(philo->data->time_to_eat);
 	
+	pthread_mutex_lock(&philo->data->death_mutex);
 	if (philo->data->must_eat_count != -1 && 
 		philo->meal_count >= philo->data->must_eat_count)
 		philo->is_full = 1;
+	pthread_mutex_unlock(&philo->data->death_mutex);
 	
 	drop_forks(philo);
 }

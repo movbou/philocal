@@ -50,6 +50,7 @@ typedef struct s_data
 	int					end_simulation;
 	pthread_mutex_t		write_mutex;
 	pthread_mutex_t		death_mutex;
+	pthread_mutex_t		end_simulation_mutex;
 	t_fork				*forks;
 	t_philo				*philos;
 }				t_data;
@@ -69,6 +70,8 @@ long	get_current_time(void);
 void	ft_usleep(long time);
 void	print_status(t_philo *philo, char *status);
 void	cleanup_data(t_data *data);
+int		is_simulation_ended(t_data *data);
+void	end_simulation(t_data *data);
 
 /* simulation.c */
 int	start_simulation(t_data *data);

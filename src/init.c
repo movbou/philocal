@@ -25,6 +25,9 @@ int	init_mutex(t_data *data)
 	error = pthread_mutex_init(&data->death_mutex, NULL);
 	if (error)
 		return (0);
+	error = pthread_mutex_init(&data->end_simulation_mutex, NULL);
+	if (error)
+		return (0);
 	return (1);
 }
 
