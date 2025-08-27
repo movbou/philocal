@@ -95,7 +95,7 @@ void	*philosopher_routine(void *arg);
 void	philo_eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 void	philo_think(t_philo *philo);
-void	take_forks(t_philo *philo);
+int		take_forks(t_philo *philo);
 void	drop_forks(t_philo *philo);
 
 /* monitor.c */

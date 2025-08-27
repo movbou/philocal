@@ -25,13 +25,16 @@ static void	print_fork_status(t_philo *philo)
 	}
 }
 
-void	take_forks(t_philo *philo)
+int	take_forks(t_philo *philo)
 {
 	if (philo->data->philo_count == 1)
 	{
 		pthread_mutex_lock(&philo->left_fork->fork);
 		print_fork_status(philo);
-		return ;
+		while (!is_simulation_ended(philo->data))
+			usleep(1000);
+		pthread_mutex_unlock(&philo->left_fork->fork);
+		return (0);
 	}
 	if (philo->id % 2 == 0)
 	{
@@ -47,6 +50,7 @@ void	take_forks(t_philo *philo)
 		pthread_mutex_lock(&philo->right_fork->fork);
 		print_fork_status(philo);
 	}
+	return (1);
 }
 
 void	drop_forks(t_philo *philo)
@@ -62,7 +66,8 @@ void	drop_forks(t_philo *philo)
 
 void	philo_eat(t_philo *philo)
 {
-	take_forks(philo);
+	if (!take_forks(philo))
+		return ;
 	if (is_simulation_ended(philo->data))
 	{
 		drop_forks(philo);
@@ -80,8 +85,11 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->data->write_mutex);
 	pthread_mutex_lock(&philo->data->death_mutex);
 	philo->last_meal_time = get_current_time();
+	philo->meal_count++;
+	if (philo->data->must_eat_count != -1 && 
+		philo->meal_count >= philo->data->must_eat_count)
+		philo->is_full = 1;
 	pthread_mutex_unlock(&philo->data->death_mutex);
 	ft_usleep(philo->data->time_to_eat);
-	philo->meal_count++;
 	drop_forks(philo);
 }
