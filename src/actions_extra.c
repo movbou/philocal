@@ -12,6 +12,31 @@
 
 #include "../philo.h"
 
+void	update_meal_data(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->death_mutex);
+	philo->last_meal_time = get_current_time();
+	philo->meal_count++;
+	if (philo->data->must_eat_count != -1
+		&& philo->meal_count >= philo->data->must_eat_count)
+		philo->is_full = 1;
+	pthread_mutex_unlock(&philo->data->death_mutex);
+}
+
+int	print_eating_status(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->write_mutex);
+	if (is_simulation_ended(philo->data))
+	{
+		pthread_mutex_unlock(&philo->data->write_mutex);
+		return (0);
+	}
+	printf("%ld %d is eating\n",
+		get_current_time() - philo->data->start_simulation_time, philo->id);
+	pthread_mutex_unlock(&philo->data->write_mutex);
+	return (1);
+}
+
 void	philo_sleep(t_philo *philo)
 {
 	if (is_simulation_ended(philo->data))
@@ -41,7 +66,5 @@ void	philo_think(t_philo *philo)
 	printf("%ld %d is thinking\n",
 		get_current_time() - philo->data->start_simulation_time, philo->id);
 	pthread_mutex_unlock(&philo->data->write_mutex);
-	
-	// Small think time for fairness
 	usleep(1000);
 }

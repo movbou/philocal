@@ -70,7 +70,7 @@ void	*monitor_routine(void *arg)
 	t_data	*data;
 
 	data = (t_data *)arg;
-	usleep(1000); // Let philosophers start
+	usleep(1000);
 	while (!is_simulation_ended(data))
 	{
 		if (check_death(data))
@@ -80,7 +80,7 @@ void	*monitor_routine(void *arg)
 			end_simulation(data);
 			return (NULL);
 		}
-		usleep(100); // Check every 0.1ms for precision
+		usleep(100);
 	}
 	return (NULL);
 }

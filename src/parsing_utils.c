@@ -37,10 +37,24 @@ int	validate_numeric_input(const char *str, int *i)
 long	convert_to_number(const char *str, int i)
 {
 	long	n;
+	int		start;
 
 	n = 0;
+	start = i;
 	while (str[i] >= '0' && str[i] <= '9')
 		n = (n * 10) + (str[i++] - '0');
+	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
+		i++;
+	if (str[i] != '\0')
+	{
+		print_error("Error: argument must be a positive number\n");
+		return (LONG_MIN);
+	}
+	if (i == start)
+	{
+		print_error("Error: empty number\n");
+		return (LONG_MIN);
+	}
 	if (n > INT_MAX)
 	{
 		print_error("Error: the input value is too big");

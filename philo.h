@@ -10,18 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <limits.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
+#ifndef PHILO_H
+# define PHILO_H
 
-#define MAX_PHILOS 200
-#define THINKING 0
-#define EATING 1
-#define SLEEPING 2
-#define DEAD 3
+# include <limits.h>
+# include <pthread.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/time.h>
+
+# define MAX_PHILOS 200
+# define THINKING 0
+# define EATING 1
+# define SLEEPING 2
+# define DEAD 3
 
 /*
 	fork
@@ -93,12 +96,18 @@ void	*philosopher_routine(void *arg);
 
 /* actions.c */
 void	philo_eat(t_philo *philo);
-void	philo_sleep(t_philo *philo);
-void	philo_think(t_philo *philo);
 int		take_forks(t_philo *philo);
 void	drop_forks(t_philo *philo);
+
+/* actions_extra.c */
+void	philo_sleep(t_philo *philo);
+void	philo_think(t_philo *philo);
+void	update_meal_data(t_philo *philo);
+int		print_eating_status(t_philo *philo);
 
 /* monitor.c */
 void	*monitor_routine(void *arg);
 int		check_death(t_data *data);
 int		all_philos_full(t_data *data);
+
+#endif

@@ -73,23 +73,12 @@ void	philo_eat(t_philo *philo)
 		drop_forks(philo);
 		return ;
 	}
-	pthread_mutex_lock(&philo->data->write_mutex);
-	if (is_simulation_ended(philo->data))
+	if (!print_eating_status(philo))
 	{
-		pthread_mutex_unlock(&philo->data->write_mutex);
 		drop_forks(philo);
 		return ;
 	}
-	printf("%ld %d is eating\n",
-		get_current_time() - philo->data->start_simulation_time, philo->id);
-	pthread_mutex_unlock(&philo->data->write_mutex);
-	pthread_mutex_lock(&philo->data->death_mutex);
-	philo->last_meal_time = get_current_time();
-	philo->meal_count++;
-	if (philo->data->must_eat_count != -1 && 
-		philo->meal_count >= philo->data->must_eat_count)
-		philo->is_full = 1;
-	pthread_mutex_unlock(&philo->data->death_mutex);
+	update_meal_data(philo);
 	ft_usleep(philo->data->time_to_eat);
 	drop_forks(philo);
 }
