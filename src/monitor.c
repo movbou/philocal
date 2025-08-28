@@ -18,11 +18,11 @@ int	check_death(t_data *data)
 	long	current_time;
 	long	time_since_last_meal;
 
+	current_time = get_current_time();
 	i = 0;
 	while (i < data->philo_count)
 	{
 		pthread_mutex_lock(&data->death_mutex);
-		current_time = get_current_time();
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		if (time_since_last_meal > data->time_to_die)
 		{
@@ -70,14 +70,17 @@ void	*monitor_routine(void *arg)
 	t_data	*data;
 
 	data = (t_data *)arg;
+	usleep(1000); // Let philosophers start
 	while (!is_simulation_ended(data))
 	{
-		if (check_death(data) || all_philos_full(data))
-			break ;
-		if (data->time_to_die <= 100)
-			usleep(200);
-		else
-			usleep(500);
+		if (check_death(data))
+			return (NULL);
+		if (all_philos_full(data))
+		{
+			end_simulation(data);
+			return (NULL);
+		}
+		usleep(100); // Check every 0.1ms for precision
 	}
 	return (NULL);
 }

@@ -41,4 +41,7 @@ void	philo_think(t_philo *philo)
 	printf("%ld %d is thinking\n",
 		get_current_time() - philo->data->start_simulation_time, philo->id);
 	pthread_mutex_unlock(&philo->data->write_mutex);
+	
+	// Small think time for fairness
+	usleep(1000);
 }
