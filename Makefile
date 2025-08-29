@@ -1,26 +1,20 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 
-SRCDIR = src
-SOURCES = $(SRCDIR)/main.c $(SRCDIR)/parsing.c $(SRCDIR)/parsing_utils.c $(SRCDIR)/init.c $(SRCDIR)/simulation.c $(SRCDIR)/actions.c $(SRCDIR)/actions_extra.c $(SRCDIR)/monitor.c $(SRCDIR)/utils.c $(SRCDIR)/utils_extra.c
-
-OBJECTS = $(SOURCES:.c=.o)
+SRC = src/main.c src/parsing.c src/parsing_utils.c src/init.c src/simulation.c src/actions.c src/actions_extra.c src/monitor.c src/utils.c src/utils_extra.c
 
 all: $(NAME)
 
-$(NAME): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJECTS)
-
-%.o: %.c philo.h
-	$(CC) $(CFLAGS) -c $< -o $@
+$(NAME): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
 
 clean:
-	rm -f $(OBJECTS)
+	@rm -f $(NAME)
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 
 re: fclean all
 
