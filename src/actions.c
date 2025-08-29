@@ -68,17 +68,15 @@ void	philo_eat(t_philo *philo)
 {
 	if (!take_forks(philo))
 		return ;
-	if (is_simulation_ended(philo->data))
-	{
-		drop_forks(philo);
+	if (!start_eating_sequence(philo))
 		return ;
-	}
-	update_meal_data(philo);
 	if (!print_eating_status(philo))
 	{
+		clear_eating_state(philo);
 		drop_forks(philo);
 		return ;
 	}
 	ft_usleep(philo->data->time_to_eat);
+	clear_eating_state(philo);
 	drop_forks(philo);
 }

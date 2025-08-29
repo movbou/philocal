@@ -44,6 +44,8 @@ typedef struct s_philo
 	long				meal_count;
 	long				last_meal_time;
 	int					is_full;
+	int					is_eating;
+	pthread_mutex_t		eating_mutex;
 	t_fork				*left_fork;
 	t_fork				*right_fork;
 	pthread_t			thread;
@@ -102,6 +104,8 @@ void	drop_forks(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 void	philo_think(t_philo *philo);
 void	update_meal_data(t_philo *philo);
+void	clear_eating_state(t_philo *philo);
+int		start_eating_sequence(t_philo *philo);
 int		print_eating_status(t_philo *philo);
 
 /* monitor.c */

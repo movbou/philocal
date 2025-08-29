@@ -52,6 +52,7 @@ void	cleanup_data(t_data *data)
 		while (i < data->philo_count)
 		{
 			pthread_mutex_destroy(&data->forks[i].fork);
+			pthread_mutex_destroy(&data->philos[i].eating_mutex);
 			i++;
 		}
 		free(data->forks);
