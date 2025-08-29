@@ -73,12 +73,12 @@ void	philo_eat(t_philo *philo)
 		drop_forks(philo);
 		return ;
 	}
+	update_meal_data(philo);
 	if (!print_eating_status(philo))
 	{
 		drop_forks(philo);
 		return ;
 	}
-	update_meal_data(philo);
 	ft_usleep(philo->data->time_to_eat);
 	drop_forks(philo);
 }

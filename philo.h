@@ -20,7 +20,6 @@
 # include <unistd.h>
 # include <sys/time.h>
 
-# define MAX_PHILOS 200
 # define THINKING 0
 # define EATING 1
 # define SLEEPING 2

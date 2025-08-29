@@ -22,6 +22,14 @@ int	check_death(t_data *data)
 	i = 0;
 	while (i < data->philo_count)
 	{
+		pthread_mutex_lock(&data->philos[i].eating_mutex);
+		if (data->philos[i].is_eating)
+		{
+			pthread_mutex_unlock(&data->philos[i].eating_mutex);
+			i++;
+			continue;
+		}
+		pthread_mutex_unlock(&data->philos[i].eating_mutex);
 		pthread_mutex_lock(&data->death_mutex);
 		time_since_last_meal = current_time - data->philos[i].last_meal_time;
 		if (time_since_last_meal > data->time_to_die)
